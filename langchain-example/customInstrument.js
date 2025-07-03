@@ -12,28 +12,43 @@ const RunnableModule = require('@langchain/core/runnables')
 const ToolsModule = require('@langchain/core/tools')
 const VectorStoresModule = require('@langchain/core/vectorstores')
 
-const httpInstrumentation = new HttpInstrumentation();
-const langChainInstrumentation = new LangChainInstrumentation();
+const traceloop = require("@traceloop/node-server-sdk")
+
+traceloop.initialize({
+  appName: "myTestApp",
+  instrumentModules: {
+    langchain: {
+      runnablesModule: RunnableModule,
+      toolsModule: ToolsModule,
+      chainsModule: ChainsModule,
+      agentsModule: AgentsModule,
+      vectorStoreModule: VectorStoresModule,
+    }
+  }
+});
+
+// const httpInstrumentation = new HttpInstrumentation();
+// const langChainInstrumentation = new LangChainInstrumentation();
 
 // Some manual instrumentation is required:
 // - https://www.traceloop.com/docs/openllmetry/tracing/js-force-instrumentations
 // - https://github.com/traceloop/openllmetry-js/issues/471
-langChainInstrumentation.manuallyInstrument({
-  runnablesModule: RunnableModule,
-  toolsModule: ToolsModule,
-  chainsModule: ChainsModule,
-  agentsModule: AgentsModule,
-  vectorStoreModule: VectorStoresModule,
-});
+// langChainInstrumentation.manuallyInstrument({
+//   runnablesModule: RunnableModule,
+//   toolsModule: ToolsModule,
+//   chainsModule: ChainsModule,
+//   agentsModule: AgentsModule,
+//   vectorStoreModule: VectorStoresModule,
+// });
 
-langChainInstrumentation.enable();
+// langChainInstrumentation.enable();
 
-httpInstrumentation.setTracerProvider(tracerProvider);
-langChainInstrumentation.setTracerProvider(tracerProvider);
+// httpInstrumentation.setTracerProvider(tracerProvider);
+// langChainInstrumentation.setTracerProvider(tracerProvider);
 
-registerInstrumentations({
-  instrumentations: [
-    httpInstrumentation,
-    langChainInstrumentation,
-  ]
-})
+// registerInstrumentations({
+//   instrumentations: [
+//     httpInstrumentation,
+//     // langChainInstrumentation,
+//   ]
+// })
